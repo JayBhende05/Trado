@@ -1,13 +1,57 @@
 "use client";
 import { useEffect, useState } from "react";
-import { BTicker } from "../utils/types";
+import { B24hrTicker, BTicker } from "../utils/types";
 import { getTicker } from "../utils/clients";
+import { SignalingManager } from "../utils/SignalingManager";
 
 export const MarketBar = ({market}: {market: string}) => {
     const [ticker, setTicker] = useState<BTicker | null>(null);
 
     useEffect(() => {
         getTicker(market).then(setTicker);
+        const mark = market.replace("_","").toLowerCase()
+
+          SignalingManager.getInstance().registerCallback("24hrTicker", (data: Partial<B24hrTicker>)  =>  setTicker(prev => ({
+    symbol: data.symbol ?? prev?.symbol ?? "",
+    priceChange: data.priceChange ?? prev?.priceChange ?? "",
+    priceChangePercent: data.priceChangePercent ?? prev?.priceChangePercent ?? "",
+    weightedAvgPrice: data.weightedAvgPrice ?? prev?.weightedAvgPrice ?? "",
+    prevClosePrice: data.prevClosePrice ?? prev?.prevClosePrice ?? "",
+    lastPrice: data.lastPrice ?? prev?.lastPrice ?? "",
+    lastQty: data.lastQty ?? prev?.lastQty ?? "",
+    bidPrice: data.bidPrice ?? prev?.bidPrice ?? "",
+    bidQty: data.bidQty ?? prev?.bidQty ?? "",
+    askPrice: data.askPrice ?? prev?.askPrice ?? "",
+    askQty: data.askQty ?? prev?.askQty ?? "",
+    openPrice: data.openPrice ?? prev?.openPrice ?? "",
+    highPrice: data.highPrice ?? prev?.highPrice ?? "",
+    lowPrice: data.lowPrice ?? prev?.lowPrice ?? "",
+    volume: data.volume ?? prev?.volume ?? "",
+    quoteVolume: data.quoteVolume ?? prev?.quoteVolume ?? "",
+    openTime: data.openTime ?? prev?.openTime ?? 0,
+    closeTime: data.closeTime ?? prev?.closeTime ?? 0,
+    firstId: data.firstId ?? prev?.firstId ?? 0,
+    lastId: data.lastId ?? prev?.lastId ?? 0,
+    count: data.count ?? prev?.count ?? 0,
+})), `${mark}@ticker`);
+
+
+        SignalingManager.getInstance().sendMessage({"method":"SUBSCRIBE","params":[`${mark}@ticker`]});
+
+        return () => {
+           return () => {
+    SignalingManager.getInstance().deRegisterCallback(
+        "24hrTicker",
+        `${mark}@ticker`
+    );
+
+    SignalingManager.getInstance().sendMessage({
+        method: "UNSUBSCRIBE",
+        params: [`${mark}@ticker`]
+    });
+}
+        }
+
     }, [market])
 
     return <div>

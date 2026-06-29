@@ -1,12 +1,12 @@
 
 export const AskTable = ({ asks }: { asks: [string, string][] }) => {
     let currentTotal = 0;
-    console.log("DATA ASK" , asks);
+    // console.log("DATA ASK" , asks);
     const relevantAsks = asks.slice(0, 15); //Big to small 
-    console.log("ASKS are ", relevantAsks)
+    // console.log("ASKS are ", relevantAsks)
    
     relevantAsks.reverse();  //small to big
-    console.log("ASKS are ", relevantAsks)
+    // console.log("ASKS are ", relevantAsks)
 
     let asksWithTotal: [string, string, number][] = [];
     for (let i = relevantAsks.length - 1; i>=0; i--)  {
