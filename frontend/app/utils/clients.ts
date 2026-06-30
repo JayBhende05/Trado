@@ -1,13 +1,13 @@
 
 import axios from "axios";
-import { B24hrTicker, BTicker, BDepth, BKline } from "./types";
+import { B24hrTicker, BTicker, BDepth, BKline, BTrades } from "./types";
 
 const PROXY_URL = 'http://localhost:3001/api/v1'
 
 export async function getTicker(market: string):Promise<BTicker>{
     const response =  await axios.get(`${PROXY_URL}/ticker?symbol=${market}`);
     if(!response.data){
-      throw new Error('Data not found')
+      throw new Error('Ticker Data Not Found')
     }
     return response.data.data
 }
@@ -15,7 +15,7 @@ export async function getTicker(market: string):Promise<BTicker>{
 export async function getTickers():Promise<B24hrTicker>{
     const response =  await axios.get(`${PROXY_URL}/tickers`);
     if(!response.data){
-      throw new Error('Data not found')
+      throw new Error('Tickers Data Not Found')
     }
     return response.data.data
 
@@ -25,9 +25,18 @@ export async function getTickers():Promise<B24hrTicker>{
 export async function getDepth(market: string):Promise<BDepth>{
     const response =  await axios.get(`${PROXY_URL}/depth?symbol=${market}`);
     if(!response.data){
-      throw new Error('Data not found')
+      throw new Error('Orderbook Data Not Found')
     }
     return response.data.data
+
+}
+export async function getTrades(market: string):Promise<BTrades[]>{
+    const response =  await axios.get(`${PROXY_URL}/trades?symbol=${market}`);
+    if(!response.data){
+      throw new Error(' Trades Data Not Found')
+    }
+    return response.data.data
+
 
 }
 
@@ -37,7 +46,7 @@ export async function getKlines(market:string, interval: string, startTime: numb
 
   //  console.log("CLIENT KLINE ", response)
     if(!response.data){
-      throw new Error('Data not found')
+      throw new Error('Chart Data Not Found')
     }
     return response.data.data
   

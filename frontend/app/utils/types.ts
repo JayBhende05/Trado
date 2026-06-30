@@ -2,7 +2,7 @@
 
 
 
-export interface B24hrTicker{
+export interface B24hrTicker {
   symbol: string;
   priceChange: string | number;
   priceChangePercent: string | number;
@@ -13,7 +13,7 @@ export interface B24hrTicker{
 };
 
 
-export interface BTicker{
+export interface BTicker {
   symbol: string,
   priceChange: string,
   priceChangePercent: string,
@@ -32,13 +32,28 @@ export interface BTicker{
 }
 
 export interface BDepth {
-    bids: [string, string][],
-    asks: [string, string][],
-    lastUpdateId: string
+  bids: [string, string][],
+  asks: [string, string][],
+  lastUpdateId?: string
+}
+
+export interface Orderbook extends BDepth{
+  price : string
+}
+
+export interface BTrades {
+  id: number,
+  price: string,
+  qty: string,
+  quoteQty: string,
+  time: number,
+  isBuyerMaker: boolean,
+  isBestMatch: boolean
+  eventType?: string
 }
 
 export type BKline = [
-   openTime: number,
+  openTime: number,
   open: string,
   high: string,
   low: string,

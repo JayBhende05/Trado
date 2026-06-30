@@ -62,6 +62,7 @@ export class SignalingManager {
             callback(newTicker);
           // console.log("WebSocket Message is", message)
         }
+
         if(type === 'depthUpdate'){
 
           const newBids: [string, string][] = message.data.b
@@ -77,6 +78,9 @@ export class SignalingManager {
 
         }
 
+    if (type === "trade") {
+    callback(message.data);
+}
 
 
   })
