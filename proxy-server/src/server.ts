@@ -109,6 +109,43 @@ app.get("/api/v1/depth", async (req: Request, res: Response) => {
     });
   }
 });
+app.get("/api/v1/trades", async (req: Request, res: Response) => {
+  try {
+    const symbol = req.query.symbol as string;
+
+    if (!symbol) {
+      return res.status(400).json({
+        success: false,
+        message: "Symbol required",
+      });
+    }
+
+    const response = await fetch(
+      `https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=30`
+    );
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        success: false,
+        message: "Failed to fetch data from Binance",
+      });
+    }
+
+    const data = await response.json();
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Failed to fetch Trades data", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
 
 app.get("/api/v1/klines", async (req: Request, res: Response) => {
   try {
