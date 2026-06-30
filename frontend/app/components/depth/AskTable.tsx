@@ -32,6 +32,7 @@ export const AskTable = ({ asks }: { asks: [string, string][] }) => {
 
 
 function Ask({price, quantity, total, maxTotal}: {price: string, quantity: string, total: number, maxTotal: number}) {
+
     return <div
     style={{
         display: "flex",
@@ -54,7 +55,7 @@ function Ask({price, quantity, total, maxTotal}: {price: string, quantity: strin
     ></div>
     <div className="flex justify-between text-xs w-full">
         <div>
-            {price}
+           {price}
         </div>
         <div>
             {quantity}

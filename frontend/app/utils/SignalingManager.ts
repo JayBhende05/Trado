@@ -38,7 +38,11 @@ export class SignalingManager {
 
     this.ws.onmessage = (event) => {
       const message = JSON.parse(event.data)
-      const type = message.data.e
+      let type : string  = ''
+      if(message.data){
+        type = message?.data.e
+      }
+      
 
       if (this.callbacks[type]) {
         this.callbacks[type].forEach(({ callback } : any) => {
@@ -47,30 +51,30 @@ export class SignalingManager {
 
             const newTicker: Partial<B24hrTicker> = {
                 symbol: message.data.s,
-                priceChange: message.data.p,
-                priceChangePercent: message.data.P,
-                weightedAvgPrice: message.data.w,
-                prevClosePrice: message.data.x,
-                lastPrice: message.data.c,
-                lastQty: message.data.Q,
-                bidPrice: message.data.b,
-                bidQty: message.data.B,
-                askPrice: message.data.a,
-                askQty: message.data.A,
-                openPrice: message.data.o,
-                highPrice: message.data.h,
-                lowPrice: message.data.l,
-                volume: message.data.v,
-                quoteVolume: message.data.q,
-                openTime: message.data.O,
-                closeTime: message.data.C,
-                firstId: message.data.F,
-                lastId: message.data.L,
-                count: message.data.n,
+                priceChange: parseFloat(message.data.p), 
+                priceChangePercent: parseFloat(message.data.P), 
+                lastPrice: parseFloat(message.data.c), 
+                highPrice:parseFloat( message.data.h), 
+                lowPrice: parseFloat(message.data.l),  
+                volume: parseFloat(message.data.v), 
             };
 
             callback(newTicker);
-          console.log("WebSocket Message is", message)
+          // console.log("WebSocket Message is", message)
+        }
+        if(type === 'depthUpdate'){
+
+          const newBids: [string, string][] = message.data.b
+          const newAsks : [string, string][] = message.data.
+          a
+
+          const data : { Bids : [string, string][], Asks : [string, string][] } = {
+            Bids : newBids,
+            Asks : newAsks
+          }
+
+          callback(data)
+
         }
 
 
