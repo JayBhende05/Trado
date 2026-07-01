@@ -10,6 +10,32 @@ const port = 3001;
 app.use(cors());
 
 
+app.get("/api/v1/tickers/USDT", async (req: Request, res: Response) => {
+  try {
+    const response = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22,%22BNBUSDT%22,%22SOLUSDT%22,%22XRPUSDT%22,%22ADAUSDT%22,%22DOGEUSDT%22,%22TRXUSDT%22,%22LINKUSDT%22,%22AVAXUSDT%22,%22SUIUSDT%22,%22DOTUSDT%22,%22LTCUSDT%22,%22BCHUSDT%22,%22ATOMUSDT%22,%22NEARUSDT%22,%22APTUSDT%22,%22PEPEUSDT%22,%22SHIBUSDT%22,%22UNIUSDT%22%5D");
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        success: false,
+        message: "Failed to fetch data from Binance",
+      });
+    }
+
+    const data = await response.json();
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Error fetching ticker:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
 app.get("/api/v1/tickers", async (req: Request, res: Response) => {
   try {
     const response = await fetch("https://api.binance.com/api/v3/ticker/24hr");
