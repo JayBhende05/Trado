@@ -82,6 +82,10 @@ export class SignalingManager {
     callback(message.data);
 }
 
+if (type === "kline") {
+    callback(message.data.k);
+}
+
 
   })
 
