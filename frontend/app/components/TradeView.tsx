@@ -1,59 +1,134 @@
-import { useEffect, useRef } from "react";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
 import { ChartManager } from "../utils/ChartManager";
 import { getKlines } from "../utils/clients";
 import { BKline } from "../utils/types";
+
 
 export function TradeView({
   market,
 }: {
   market: string;
 }) {
-const chartRef = useRef<HTMLDivElement | null>(null);
-const chartManagerRef = useRef<ChartManager | null>(null);
+  const chartRef = useRef<HTMLDivElement | null>(null);
+  const chartManagerRef = useRef<ChartManager | null>(null);
 
- useEffect(() => {
-    const init = async () => {
-      let klineData: BKline[] = [];
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    const initChart = async () => {
+      if (!chartRef.current) return;
+
+
       try {
-        klineData = await getKlines(market, "1h", Math.floor((new Date().getTime() - 1000 * 60 * 60 * 24 * 7) / 1000), Math.floor(new Date().getTime() / 1000)); 
-      // console.log("KLINE DATA IS ", klineData)
-      
-      } catch (e) { }
+        setLoading(true);
 
-      if (chartRef) {
-        if (chartManagerRef.current) {
-          chartManagerRef.current.destroy();
-        }
-        // console.log(klineData)
+
+        const now = Math.floor(Date.now() / 1000);
+
+        const weekAgo = now - 60 * 60 * 24 * 7;
+
+
+        const klineData: BKline[] = await getKlines(
+          market,
+          "1h",
+          weekAgo,
+          now
+        );
+
+
+        const formattedData = klineData
+          .map((item) => ({
+            open: Number(item[1]),
+            high: Number(item[2]),
+            low: Number(item[3]),
+            close: Number(item[4]),
+            timestamp: item[0],
+          }))
+          .sort(
+            (a, b) => a.timestamp - b.timestamp
+          );
+
+
+        // Remove old chart instance
+        chartManagerRef.current?.destroy();
+
+
         const chartManager = new ChartManager(
           chartRef.current,
-          [
-            ...klineData?.map((x) => ({
-              close: parseFloat(x[4]),
-              high: parseFloat(x[2]),
-              low: parseFloat(x[3]),
-              open: parseFloat(x[1]),
-              timestamp: x[0], 
-            })),
-          ].sort((x, y) => (x.timestamp < y.timestamp ? -1 : 1)) || [],
+          formattedData,
           {
-            background: "#0e0f14",
-            color: "white",
+            background: "#0D1117",
+            color: "#FFFFFF",
           }
         );
-        //@ts-ignore
+
+
         chartManagerRef.current = chartManager;
+
+
+      } catch (error) {
+        console.error(
+          "Failed loading chart:",
+          error
+        );
+
+      } finally {
+        setLoading(false);
       }
     };
-    init();
-  }, [market, chartRef]);
 
 
+    initChart();
+
+
+    return () => {
+      chartManagerRef.current?.destroy();
+      chartManagerRef.current = null;
+    };
+
+  }, [market]);
 
 
   return (
-    <>
-      <div ref={chartRef} style={{ height: "520px", width: "100%", marginTop: 4 }}></div>
-    </>
+    <div className="
+      relative
+      h-[520px]
+      w-full
+      overflow-hidden
+      rounded-xl
+      border
+      border-[#1F2937]
+      bg-[#0D1117]
+    ">
+
+
+      {loading && (
+        <div className="
+          absolute
+          inset-0
+          z-10
+          flex
+          items-center
+          justify-center
+          bg-[#0D1117]/80
+          text-sm
+          text-gray-400
+          backdrop-blur-sm
+        ">
+          Loading chart...
+        </div>
+      )}
+
+
+      <div
+        ref={chartRef}
+        className="h-full w-full"
+      />
+
+    </div>
   );
 }

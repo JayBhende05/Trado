@@ -83,83 +83,200 @@ export function Depth({ market }: { market: string }) {
     };
   }, [market]);
 
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex flex-row gap-3">
-        <OrderBookButton type={btnType} setType={setbtnType} />
-        <TradeButton type={btnType} setType={setbtnType} />
-      </div>
-      <div>
-        {btnType === "orderbook" ? (
-          <section>
-            <OrderBookTableHeader />
-            <OrderBook asks={asks} price={price} bids={bids} />
-          </section>
-        ) : (
-          <section>
-            <TradeTableHeader />
-            <TradesBook trades={trades} />
-          </section>
-        )}
-      </div>
+ return (
+  <div className="
+    overflow-hidden
+    rounded-xl
+    border
+    border-[#1F2937]
+    bg-[#0D1117]
+  ">
+
+    {/* Tabs */}
+    <div className="
+      flex
+      items-center
+      gap-6
+      border-b
+      border-[#1F2937]
+      px-4
+    ">
+
+      <OrderBookButton
+        type={btnType}
+        setType={setbtnType}
+      />
+
+      <TradeButton
+        type={btnType}
+        setType={setbtnType}
+      />
+
     </div>
-  );
+
+
+    {/* Content */}
+    <div className="p-4">
+
+      {btnType === "orderbook" ? (
+        <section>
+
+          <OrderBookTableHeader />
+
+          <OrderBook
+            asks={asks}
+            bids={bids}
+            price={price}
+          />
+
+        </section>
+      ) : (
+        <section>
+
+          <TradeTableHeader />
+
+          <TradesBook
+            trades={trades}
+          />
+
+        </section>
+      )}
+
+    </div>
+
+  </div>
+);
 }
 
 function OrderBookTableHeader() {
   return (
-    <div className="flex justify-between text-xs">
-      <div className="text-white">Price</div>
-      <div className="text-slate-500">Size</div>
-      <div className="text-slate-500">Total</div>
+    <div className="
+      grid
+      grid-cols-3
+      pb-3
+      text-xs
+      uppercase
+      tracking-wide
+      text-gray-500
+    ">
+      <div>
+        Price
+      </div>
+
+      <div className="text-right">
+        Size
+      </div>
+
+      <div className="text-right">
+        Total
+      </div>
     </div>
   );
 }
+
+
 function TradeTableHeader() {
   return (
-    <div className="flex justify-between text-xs">
-      <div className="text-white">Price</div>
-      <div className="text-slate-500">Qty</div>
-      <div className="text-slate-500"></div>
+    <div className="
+      grid
+      grid-cols-3
+      pb-3
+      text-xs
+      uppercase
+      tracking-wide
+      text-gray-500
+    ">
+      <div>
+        Price
+      </div>
+
+      <div className="text-right">
+        Quantity
+      </div>
+
+      <div className="text-right">
+        Time
+      </div>
     </div>
   );
 }
 
-function OrderBookButton({ type, setType }: { type: string; setType: any }) {
+function OrderBookButton({
+  type,
+  setType,
+}: {
+  type: string;
+  setType: (type: string) => void;
+}) {
   return (
-    <div
-      className="flex flex-col cursor-pointer justify-center py-2"
+    <button
       onClick={() => setType("orderbook")}
-    >
-      <div
-        className={`text-sm font-medium py-1 border-b-2 ${
+      className={`
+        relative
+        py-3
+        text-sm
+        font-medium
+        transition
+        ${
           type === "orderbook"
-            ? "border-accentBlue text-baseTextHighEmphasis"
-            : "border-transparent text-baseTextMedEmphasis hover:border-baseTextHighEmphasis hover:text-baseTextHighEmphasis"
-        }`}
-      >
-        Book
-      </div>
-    </div>
+            ? "text-white"
+            : "text-gray-500 hover:text-white"
+        }
+      `}
+    >
+      Book
+
+      {type === "orderbook" && (
+        <span className="
+          absolute
+          bottom-0
+          left-0
+          right-0
+          h-[2px]
+          rounded-full
+          bg-[#00D084]
+        " />
+      )}
+    </button>
   );
 }
-
-function TradeButton({ type, setType }: { type: string; setType: any }) {
+function TradeButton({
+  type,
+  setType,
+}: {
+  type: string;
+  setType: (type: string) => void;
+}) {
   return (
-    <div
-      className="flex flex-col cursor-pointer justify-center py-2"
+    <button
       onClick={() => setType("trade")}
-    >
-      <div
-        className={`text-sm font-medium py-1 border-b-2 ${
+      className={`
+        relative
+        py-3
+        text-sm
+        font-medium
+        transition
+        ${
           type === "trade"
-            ? "border-accentBlue text-baseTextHighEmphasis"
-            : "border-transparent text-baseTextMedEmphasis hover:border-baseTextHighEmphasis hover:text-baseTextHighEmphasis"
-        }`}
-      >
-        Trades
-      </div>
-    </div>
+            ? "text-white"
+            : "text-gray-500 hover:text-white"
+        }
+      `}
+    >
+      Trades
+
+      {type === "trade" && (
+        <span className="
+          absolute
+          bottom-0
+          left-0
+          right-0
+          h-[2px]
+          rounded-full
+          bg-[#00D084]
+        " />
+      )}
+    </button>
   );
 }
 

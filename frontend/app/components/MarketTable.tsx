@@ -116,181 +116,241 @@ export default function MarketTable({
   const getBaseSymbol = (symbol: string) => symbol.replace("USDT", "");
 
   return (
-    <div className="bg-backpack-card border border-backpack-border rounded-xl overflow-hidden">
-      {/* Header */}
-      <div className="p-4 border-b border-backpack-border flex justify-between items-center">
-        <h2 className="text-xs font-bold uppercase text-backpack-text-muted">
+  <div className="overflow-hidden rounded-2xl border border-[#1F2937] bg-[#0D1117] shadow-xl">
+
+    {/* Header */}
+    <div className="flex items-center justify-between border-b border-[#1F2937] p-5">
+
+      <div>
+        <h2 className="text-lg font-semibold text-white">
           Markets
         </h2>
 
-        <div className="text-[10px] text-backpack-text-muted uppercase tracking-widest">
-          Showing {sortedAssets.length} assets
-        </div>
+        <p className="mt-1 text-xs text-gray-500">
+          Live crypto prices
+        </p>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="text-[10px] uppercase text-backpack-text-muted border-b border-backpack-border">
-              <th className="p-4 cursor-pointer" onClick={() => handleSort("symbol")}>
-                Asset
-              </th>
-
-              <th className="p-4 text-right cursor-pointer" onClick={() => handleSort("lastPrice")}>
-                Price
-              </th>
-
-              <th className="p-4 text-right cursor-pointer hidden md:table-cell" onClick={() => handleSort("priceChangePercent")}>
-                24h %
-              </th>
-
-              <th className="p-4 text-right cursor-pointer hidden md:table-cell" onClick={() => handleSort("highPrice")}>
-                High
-              </th>
-
-              <th className="p-4 text-right cursor-pointer hidden md:table-cell" onClick={() => handleSort("lowPrice")}>
-                Low
-              </th>
-
-              <th className="p-4 text-right cursor-pointer" onClick={() => handleSort("quoteVolume")}>
-                Volume
-              </th>
-
-              <th className="p-4 text-right hidden lg:table-cell">
-                Chart
-              </th>
-            </tr>
-          </thead>
-                    <tbody className="divide-y divide-backpack-border/40">
-            {loading ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="p-10 text-center text-backpack-text-muted text-sm"
-                >
-                  Loading markets...
-                </td>
-              </tr>
-            ) : sortedAssets.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="p-10 text-center text-backpack-text-muted text-sm"
-                >
-                  No assets found.
-                </td>
-              </tr>
-            ) : (
-              sortedAssets.map((asset) => {
-                const base = getBaseSymbol(asset.symbol);
-                const change = Number(asset.priceChangePercent);
-                const positive = change >= 0;
-
-                const price = Number(asset.lastPrice);
-                const high = Number(asset.highPrice);
-                const low = Number(asset.lowPrice);
-                const volume = Number(asset.quoteVolume);
-
-                // Sparkline
-                const spark = asset.sparkline || [];
-                const min = Math.min(...spark);
-                const max = Math.max(...spark);
-                const range = max - min || 1;
-
-                const points = spark
-                  .map((v, i) => {
-                    const x = (i / (spark.length - 1)) * 90 + 5;
-                    const y = 20 - ((v - min) / range) * 15;
-                    return `${x},${y}`;
-                  })
-                  .join(" ");
-
-                return (
-                  <tr
-                    key={asset.symbol}
-                    onClick={() => onSelectAsset(asset)}
-                    className="hover:bg-backpack-border/30 cursor-pointer transition"
-                  >
-                    {/* Asset */}
-                    <td className="p-4">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-white">
-                          {base}
-                        </span>
-                        <span className="text-xs text-backpack-text-muted">
-                          {asset.symbol}
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Price */}
-                    <td className="p-4 text-right font-mono text-white">
-                      {formatPrice(price)}
-                    </td>
-
-                    {/* 24h Change */}
-                    <td className="p-4 text-right hidden md:table-cell">
-                      <span
-                        className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded ${
-                          positive
-                            ? "text-brand-green bg-brand-green/10"
-                            : "text-brand-red bg-brand-red/10"
-                        }`}
-                      >
-                        {/* {positive ? (
-                          // <TrendingUp className="w-3 h-3" />
-                        ) : (
-                          // <TrendingDown className="w-3 h-3" />
-                        )} */}
-                        {positive ? "+" : ""}
-                        {change.toFixed(2)}%
-                      </span>
-                    </td>
-
-                    {/* High */}
-                    <td className="p-4 text-right hidden md:table-cell text-backpack-text-muted">
-                      {formatPrice(high)}
-                    </td>
-
-                    {/* Low */}
-                    <td className="p-4 text-right hidden md:table-cell text-backpack-text-muted">
-                      {formatPrice(low)}
-                    </td>
-
-                    {/* Volume */}
-                    <td className="p-4 text-right font-mono text-white">
-                      {formatVolume(volume)}
-                    </td>
-
-                    {/* Sparkline */}
-                    <td className="p-4 hidden lg:table-cell">
-                      <div className="w-[100px] h-6 ml-auto">
-                        {spark.length > 0 && (
-                          <svg
-                            viewBox="0 0 100 24"
-                            className="w-full h-full"
-                            preserveAspectRatio="none"
-                          >
-                            <polyline
-                              fill="none"
-                              stroke={positive ? "#0ecb81" : "#f6465d"}
-                              strokeWidth="1.5"
-                              points={points}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+      <div className="rounded-lg border border-[#1F2937] bg-[#070B12] px-3 py-2 text-xs text-gray-400">
+        {sortedAssets.length} Assets
       </div>
+
     </div>
-  );
+
+
+    {/* Table */}
+    <div className="overflow-x-auto">
+
+      <table className="w-full text-left">
+
+        <thead>
+          <tr className="border-b border-[#1F2937] text-[11px] uppercase tracking-wider text-gray-500">
+
+            <th
+              className="cursor-pointer p-4"
+              onClick={() => handleSort("symbol")}
+            >
+              Asset
+            </th>
+
+            <th
+              className="cursor-pointer p-4 text-right"
+              onClick={() => handleSort("lastPrice")}
+            >
+              Price
+            </th>
+
+            <th
+              className="hidden cursor-pointer p-4 text-right md:table-cell"
+              onClick={() => handleSort("priceChangePercent")}
+            >
+              24h Change
+            </th>
+
+            <th className="hidden p-4 text-right md:table-cell">
+              High
+            </th>
+
+            <th className="hidden p-4 text-right md:table-cell">
+              Low
+            </th>
+
+            <th
+              className="cursor-pointer p-4 text-right"
+              onClick={() => handleSort("quoteVolume")}
+            >
+              Volume
+            </th>
+
+            <th className="hidden p-4 text-right lg:table-cell">
+              Trend
+            </th>
+
+          </tr>
+        </thead>
+
+
+        <tbody className="divide-y divide-[#1F2937]">
+
+          {loading ? (
+
+            <tr>
+              <td
+                colSpan={7}
+                className="p-12 text-center text-gray-500"
+              >
+                Loading markets...
+              </td>
+            </tr>
+
+          ) : sortedAssets.length === 0 ? (
+
+            <tr>
+              <td
+                colSpan={7}
+                className="p-12 text-center text-gray-500"
+              >
+                No assets found
+              </td>
+            </tr>
+
+          ) : (
+
+            sortedAssets.map((asset) => {
+
+              const base = getBaseSymbol(asset.symbol);
+              const change = Number(asset.priceChangePercent);
+              const positive = change >= 0;
+
+
+              return (
+                <tr
+                  key={asset.symbol}
+                  onClick={() => onSelectAsset(asset)}
+                  className="cursor-pointer transition hover:bg-[#111827]"
+                >
+
+                  {/* Asset */}
+                  <td className="p-4">
+
+                    <div className="flex items-center gap-3">
+
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#1F2937] bg-[#070B12] text-xs font-bold text-[#00D084]">
+                        {base.slice(0, 1)}
+                      </div>
+
+
+                      <div>
+                        <p className="font-semibold text-white">
+                          {base}
+                        </p>
+
+                        <p className="text-xs text-gray-500">
+                          {asset.symbol}
+                        </p>
+                      </div>
+
+                    </div>
+
+                  </td>
+
+
+                  {/* Price */}
+                  <td className="p-4 text-right font-mono text-white">
+                    {formatPrice(Number(asset.lastPrice))}
+                  </td>
+
+
+                  {/* Change */}
+                  <td className="hidden p-4 text-right md:table-cell">
+
+                    <span
+                      className={`rounded-lg px-3 py-1 text-xs font-semibold ${
+                        positive
+                          ? "bg-[#00D084]/10 text-[#00D084]"
+                          : "bg-[#F6465D]/10 text-[#F6465D]"
+                      }`}
+                    >
+                      {positive ? "+" : ""}
+                      {change.toFixed(2)}%
+                    </span>
+
+                  </td>
+
+
+                  {/* High */}
+                  <td className="hidden p-4 text-right text-gray-400 md:table-cell">
+                    {formatPrice(Number(asset.highPrice))}
+                  </td>
+
+
+                  {/* Low */}
+                  <td className="hidden p-4 text-right text-gray-400 md:table-cell">
+                    {formatPrice(Number(asset.lowPrice))}
+                  </td>
+
+
+                  {/* Volume */}
+                  <td className="p-4 text-right font-mono text-white">
+                    {formatVolume(Number(asset.quoteVolume))}
+                  </td>
+
+
+                  {/* Chart */}
+                  <td className="hidden p-4 lg:table-cell">
+
+                    <div className="ml-auto h-7 w-[100px]">
+
+                      {asset.sparkline?.length ? (
+
+                        <svg
+                          viewBox="0 0 100 24"
+                          className="h-full w-full"
+                        >
+
+                          <polyline
+                            fill="none"
+                            stroke={positive ? "#00D084" : "#F6465D"}
+                            strokeWidth="2"
+                            points={asset.sparkline
+                              .map((v, i) => {
+
+                                const x =
+                                  (i / (asset.sparkline!.length - 1)) * 90 + 5;
+
+                                const y =
+                                  20 -
+                                  (v /
+                                    Math.max(
+                                      ...asset.sparkline!
+                                    )) *
+                                    15;
+
+                                return `${x},${y}`;
+                              })
+                              .join(" ")}
+                          />
+
+                        </svg>
+
+                      ) : null}
+
+                    </div>
+
+                  </td>
+
+                </tr>
+              );
+            })
+
+          )}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+);
 }
