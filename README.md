@@ -1,3 +1,5 @@
+
+
 # 🚀 Trado
 
 <p align="center">
@@ -44,7 +46,7 @@ The current version uses Binance's REST API and WebSocket Streams to provide a r
 
 A demonstration of the real-time trading dashboard including market data, candlestick charts, order book, live trades, and swap interface.
 
-<video src="docs/media/TRADO_01.mp4" controls width="800"></video>
+https://github.com/user-attachments/assets/7b0026eb-997b-4b08-bc40-f81420e10885
 ---
 
 # 📸 Screenshots
