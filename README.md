@@ -51,19 +51,14 @@ A demonstration of the real-time trading dashboard including market data, candle
 
 ## Markets Page
 
-> Add Screenshot Here
+![Market Page](docs/screenshots/Market.png)
 
 ---
 
 ## Trading Page
 
-> Add Screenshot Here
+![Trading Page](docs/screenshots/Trade.png)
 
----
-
-## Order Book & Live Trades
-
-> Add Screenshot Here
 
 ---
 
