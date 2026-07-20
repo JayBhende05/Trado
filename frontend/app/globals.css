@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* 
+Base: Deep charcoal/black (#070B12)
+Accent: Emerald green (#00D084) — commonly associated with markets, profit, liquidity, and trading actions
+Secondary: Slate blue/gray for inactive navigation
+Borders: Subtle dark glass effect */
+
 :root {
   --background: #070B12;
   --foreground: #E5E7EB;

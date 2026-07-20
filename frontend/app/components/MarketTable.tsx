@@ -236,7 +236,18 @@ export default function MarketTable({
                     <div className="flex items-center gap-3">
 
                       <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#1F2937] bg-[#070B12] text-xs font-bold text-[#00D084]">
-                        {base.slice(0, 1)}
+                        <img
+          src={`/coins/${base?.toLowerCase()}.png`}
+          alt={base}
+          className="
+            h-9
+            w-9
+            rounded-full
+            border
+            border-[#1F2937]
+          "
+        
+        />
                       </div>
 
 

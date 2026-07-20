@@ -75,6 +75,14 @@ export function Depth({ market }: { market: string }) {
         "depthUpdate",
         `${mark}@depth`
       );
+      SignalingManager.getInstance().deRegisterCallback(
+        "24hrTicker",
+        `${mark}@ticker`
+      );
+      SignalingManager.getInstance().deRegisterCallback(
+        "trade",
+        `${mark}@trade`
+      );
 
       SignalingManager.getInstance().sendMessage({
         method: "UNSUBSCRIBE",
