@@ -4,43 +4,50 @@ import { createClient } from "redis";
 
 
 
-export class RedisManger {
+export class RedisManager {
 
     private subscriberClient: RedisClientType
-    private publisherClient: RedisClientType
+    private queueClient: RedisClientType
 
 
-    private static instance: RedisManger
+    private static instance: RedisManager
 
 
     private constructor() {
         this.subscriberClient = createClient();
         this.subscriberClient.connect();
-        this.publisherClient = createClient();
-        this.publisherClient.connect();
+        this.queueClient = createClient();
+        this.queueClient.connect();
     }
 
 
 
     public static getInstance() {
         if (!this.instance) {
-            this.instance = new RedisManger();
+            this.instance = new RedisManager();
         }
         return this.instance;
     }
 
 
-    public async Subscriber(userId: string) {
-        await this.subscriberClient.subscribe(userId, (mesg) => {
-            console.log("MEssage Received is", mesg);
+
+    public sendAndAwait(message: any) {
+        return new Promise((resolve) => {
+            const id = this.getRandomClientId();
+            console.log("GENREATED ID", id)
+            this.subscriberClient.subscribe(id, (message) => {
+                this.subscriberClient.unsubscribe(id);
+                resolve(JSON.parse(message))
+            })
+            this.queueClient.lPush("message", JSON.stringify({ clientId: id, data: message }))
         })
-
-        console.log("Sucessfully Subscribe");
     }
 
-    public async Publisher(userId: string, data: any) {
-        await this.publisherClient.publish(userId, data);
-        console.log("Sucessfully Publish")
+    public getRandomClientId() {
+        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     }
+
+
+
 
 }

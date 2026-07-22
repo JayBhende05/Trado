@@ -1,29 +1,28 @@
 import { Router } from "express";
-import { RedisManger } from "../RedisManger.js";
+import { orderSchema } from "../schemas/order.schema.js";
+import { RedisManager } from "../RedisManger.js";
 
 const orderRouter = Router();
 
 
-orderRouter.get("/g", (req, res) => {
-    const { userId } = req.query;
-
-    RedisManger.getInstance().Subscriber(userId as string);
-
-    res.json({
-        message: "Subscribed"
-    });
-});
 orderRouter.post("/", async (req, res) => {
 
-    const { userId, price, quantity, side, market } = req.body;
+    const result = orderSchema.safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(400).json({
+            error: result.error
+        });
+    }
+
+    const response = await RedisManager.getInstance().sendAndAwait({
+        type: "CREATE_ORDER",
+        data: result.data
+    })
 
 
-
-    RedisManger.getInstance().Publisher(userId, JSON.stringify(req.body));
-
-
-    res.json({
-        message: "Working"
+    res.status(200).json({
+        response
     })
 })
 
