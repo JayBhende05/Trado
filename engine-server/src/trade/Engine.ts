@@ -1,3 +1,4 @@
+import { RedisManger } from "../RedisManger";
 import { UserBalance } from "../types/engine.types";
 import { Fill, Order } from "../types/orderbook.types";
 import { Orderbook } from "./Orderbook";
@@ -27,6 +28,15 @@ export class Engine {
                         fills,
                         orderId
                     })
+                    RedisManger.getInstance().sendToApi(clientId, {
+                        type: "ORDER_PLACED",
+                        status: "SUCCESS",
+                        payload: {
+                            executedQty,
+                            fills,
+                            orderId
+                        },
+                    })
 
                     break;
                 } catch (error) {
@@ -34,13 +44,21 @@ export class Engine {
                         clientId,
                         error
                     })
+                    RedisManger.getInstance().sendToApi(clientId, {
+                        type: "ORDER_FAILED",
+                        status: "FAILED",
+                        payload: {
+                            executedQty: "",
+                            fills: [],
+                            orderId: ""
+                        },
+                    })
                 }
 
         }
 
 
     }
-
 
 
     createOrder(market: string, price: string, quantity: string, side: "BUY" | "SELL", userId: string) {

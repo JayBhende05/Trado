@@ -12,25 +12,27 @@ export class RedisManger {
 
     private constructor() {
         this.publisherClient = createClient()
+        this.publisherClient.connect()
         this.queueClient = createClient()
-
+        this.queueClient.connect()
     }
 
-    private init() {
-        this.publisherClient.connect();
-        this.queueClient.connect();
-    }
 
-    public static async getInstance() {
+
+    public static getInstance() {
         if (!this.instance) {
             this.instance = new RedisManger
-            await this.instance.init();
         }
         return this.instance
     }
 
+    public sendToQueue(message: any) {
+        this.queueClient.lPush("db_processor", JSON.stringify(message));
+    }
 
-
+    public sendToApi(clientId: string, message: any): any {
+        this.publisherClient.publish(clientId, JSON.stringify(message))
+    }
 
 
 }
