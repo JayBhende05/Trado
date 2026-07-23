@@ -7,3 +7,6 @@ export const orderSchema = z.object({
     side: z.enum(["BUY", "SELL"]),
     market: z.string()
 });
+
+
+export type Order = z.infer<typeof orderSchema>;

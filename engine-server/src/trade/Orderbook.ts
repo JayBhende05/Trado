@@ -28,9 +28,11 @@ export class Orderbook {
         executedQty: number,
         fills: Fill[]
     } {
+        
         if (order.side === "BUY") {
             const { executedQty, fills } = this.matchAsks(order);
             order.filled = executedQty;
+            console.log("Fills Created")
             if (executedQty === order.quantity) {
                 return {
                     executedQty,
@@ -62,6 +64,7 @@ export class Orderbook {
     matchAsks(order: Order): { fills: Fill[]; executedQty: number } {
         const fills: Fill[] = [];
         let executedQty = 0;
+        console.log("Matching of Asks Started")
 
         for (let i = 0; i < this.asks.length; i++) {
             const ask = this.asks[i];
@@ -98,6 +101,7 @@ export class Orderbook {
     matchBids(order: Order): { fills: Fill[], executedQty: number } {
         const fills: Fill[] = [];
         let executedQty = 0;
+        console.log("Matching of Bids Started")
 
         for (let i = 0; i < this.bids.length; i++) {
             const bid = this.bids[i];

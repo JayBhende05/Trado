@@ -1,6 +1,8 @@
 import { RedisClientType } from "@redis/client";
 import RedisClient from "@redis/client/dist/lib/client/index.js";
 import { createClient } from "redis";
+import { AwaitedMessageFromEngine, sendToApiTypes } from "./types/redismanger.types.js";
+
 
 
 
@@ -31,15 +33,18 @@ export class RedisManager {
 
 
 
-    public sendAndAwait(message: any) {
-        return new Promise((resolve) => {
+    public sendAndAwait(message: sendToApiTypes): Promise<AwaitedMessageFromEngine> {
+        return new Promise<AwaitedMessageFromEngine>((resolve) => {
             const id = this.getRandomClientId();
-            console.log("GENREATED ID", id)
+            console.log("Subscribed to Pub/Sub with Id", id)
             this.subscriberClient.subscribe(id, (message) => {
+                console.log("Receieved Message from Publisher")
                 this.subscriberClient.unsubscribe(id);
+                console.log("Unsubscribed to Pub/Sub with Id", id)
                 resolve(JSON.parse(message))
             })
             this.queueClient.lPush("message", JSON.stringify({ clientId: id, data: message }))
+            console.log("Added to Queue")
         })
     }
 

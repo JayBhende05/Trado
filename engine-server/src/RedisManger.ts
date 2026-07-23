@@ -1,5 +1,6 @@
 import { RedisClientType } from "@redis/client";
 import { createClient, RedisClient } from "redis";
+import { SendMessageToAPI } from "./types/engine.types";
 
 
 
@@ -30,7 +31,7 @@ export class RedisManger {
         this.queueClient.lPush("db_processor", JSON.stringify(message));
     }
 
-    public sendToApi(clientId: string, message: any): any {
+    public sendToApi(clientId: string, message: SendMessageToAPI) {
         this.publisherClient.publish(clientId, JSON.stringify(message))
     }
 

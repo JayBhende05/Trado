@@ -1,5 +1,5 @@
 import { RedisManger } from "../RedisManger";
-import { UserBalance } from "../types/engine.types";
+import { proccessMessage, UserBalance } from "../types/engine.types";
 import { Fill, Order } from "../types/orderbook.types";
 import { Orderbook } from "./Orderbook";
 
@@ -16,7 +16,7 @@ export class Engine {
         console.log("Initial balances are", this.balances)
     }
 
-    public process({ clientId, message }: { clientId: string, message: any }) {
+    public process({ clientId, message }: proccessMessage) {
         switch (message.type) {
             case 'CREATE_ORDER':
                 try {
@@ -28,6 +28,9 @@ export class Engine {
                         fills,
                         orderId
                     })
+                    console.log("Updated balance is", this.balances)
+                    console.log("Updated Orderbook is", this.orderbooks)
+                    console.log("Response published to Id", clientId);
                     RedisManger.getInstance().sendToApi(clientId, {
                         type: "ORDER_PLACED",
                         status: "SUCCESS",
@@ -48,7 +51,7 @@ export class Engine {
                         type: "ORDER_FAILED",
                         status: "FAILED",
                         payload: {
-                            executedQty: "",
+                            executedQty: 0,
                             fills: [],
                             orderId: ""
                         },
@@ -61,7 +64,7 @@ export class Engine {
     }
 
 
-    createOrder(market: string, price: string, quantity: string, side: "BUY" | "SELL", userId: string) {
+    createOrder(market: string, price: number, quantity: number, side: "BUY" | "SELL", userId: string) {
 
         const orderbook = this.orderbooks.find(o => o.ticker() === market)
         const baseAsset = market.split("_")[0];
@@ -87,12 +90,12 @@ export class Engine {
 
         const { fills, executedQty } = orderbook.addOrder(order);
         this.updateBalance(userId, baseAsset, quoteAsset, side, fills, executedQty);
-
-        console.log("ExecutedQty", executedQty);
-        console.log("fills", fills);
-        console.log("order", order);
-        console.log("orderbook", this.orderbooks);
-        console.log("balances", this.balances);
+        console.log("Balance of Buyers and Seller Updated");
+        // console.log("ExecutedQty", executedQty);
+        // console.log("fills", fills);
+        // console.log("order", order);
+        // console.log("orderbook", this.orderbooks);
+        // console.log("balances", this.balances);
         return { executedQty, fills, orderId: order.orderId };
     }
 
@@ -131,25 +134,26 @@ export class Engine {
         });
     }
 
-    checkAndLockFunds(baseAsset: string, quoteAsset: string, side: "BUY" | "SELL", userId: string, price: string, quantity: string) {
+    checkAndLockFunds(baseAsset: string, quoteAsset: string, side: "BUY" | "SELL", userId: string, price: number, quantity: number) {
+        console.log("Checked and Locked Funds")
         if (side === "BUY") {
-            if ((this.balances.get(userId)?.[quoteAsset]?.available || 0) < Number(quantity) * Number(price)) {
+            if ((this.balances.get(userId)?.[quoteAsset]?.available || 0) < (quantity * price)) {
                 throw new Error("Insufficient funds");
             }
             //@ts-ignore
-            this.balances.get(userId)[quoteAsset].available = this.balances.get(userId)?.[quoteAsset].available - (Number(quantity) * Number(price));
+            this.balances.get(userId)[quoteAsset].available = this.balances.get(userId)?.[quoteAsset].available - (quantity * price);
 
             //@ts-ignore
-            this.balances.get(userId)[quoteAsset].locked = this.balances.get(userId)?.[quoteAsset].locked + (Number(quantity) * Number(price));
+            this.balances.get(userId)[quoteAsset].locked = this.balances.get(userId)?.[quoteAsset].locked + (quantity * price);
         } else {
-            if ((this.balances.get(userId)?.[baseAsset]?.available || 0) < Number(quantity)) {
+            if ((this.balances.get(userId)?.[baseAsset]?.available || 0) < quantity) {
                 throw new Error("Insufficient funds");
             }
             //@ts-ignore
-            this.balances.get(userId)[baseAsset].available = this.balances.get(userId)?.[baseAsset].available - (Number(quantity));
+            this.balances.get(userId)[baseAsset].available = this.balances.get(userId)?.[baseAsset].available - (quantity);
 
             //@ts-ignore
-            this.balances.get(userId)[baseAsset].locked = this.balances.get(userId)?.[baseAsset].locked + Number(quantity);
+            this.balances.get(userId)[baseAsset].locked = this.balances.get(userId)?.[baseAsset].locked + quantity;
         }
     }
 

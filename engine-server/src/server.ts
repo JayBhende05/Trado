@@ -16,6 +16,7 @@ async function main() {
 
         } else {
             const { clientId, data } = JSON.parse(response.element);
+            console.log("Engine consumed message")
             engine.process({ clientId, message: data });
         }
     }

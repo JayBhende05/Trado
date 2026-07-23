@@ -14,6 +14,7 @@ orderRouter.post("/", async (req, res) => {
             error: result.error
         });
     }
+    console.log("Order Receieved");
 
     const response = await RedisManager.getInstance().sendAndAwait({
         type: "CREATE_ORDER",
@@ -21,6 +22,7 @@ orderRouter.post("/", async (req, res) => {
     })
 
 
+    console.log("Order Response Send")
     res.status(200).json({
         response
     })
