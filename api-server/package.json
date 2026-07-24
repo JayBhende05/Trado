@@ -7,7 +7,8 @@
   "scripts": {
     "test": "vitest",
     "build": "npx tsc -b",
-    "start": "node ./build/server.js"
+    "start": "node ./build/server.js",
+    "dev": "npm run build && node build/server.js"
   },
   "keywords": [],
   "author": "",

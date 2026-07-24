@@ -1,4 +1,4 @@
-import { RedisManger } from "../RedisManger";
+import { RedisManager } from "../RedisManager";
 import { proccessMessage, UserBalance } from "../types/engine.types";
 import { Fill, Order } from "../types/orderbook.types";
 import { Orderbook } from "./Orderbook";
@@ -31,7 +31,7 @@ export class Engine {
                     console.log("Updated balance is", this.balances)
                     console.log("Updated Orderbook is", this.orderbooks)
                     console.log("Response published to Id", clientId);
-                    RedisManger.getInstance().sendToApi(clientId, {
+                    RedisManager.getInstance().sendToApi(clientId, {
                         type: "ORDER_PLACED",
                         status: "SUCCESS",
                         payload: {
@@ -47,7 +47,7 @@ export class Engine {
                         clientId,
                         error
                     })
-                    RedisManger.getInstance().sendToApi(clientId, {
+                    RedisManager.getInstance().sendToApi(clientId, {
                         type: "ORDER_FAILED",
                         status: "FAILED",
                         payload: {
@@ -90,6 +90,7 @@ export class Engine {
 
         const { fills, executedQty } = orderbook.addOrder(order);
         this.updateBalance(userId, baseAsset, quoteAsset, side, fills, executedQty);
+        this.createDbTrades(fills, market, side, quoteAsset);
         console.log("Balance of Buyers and Seller Updated");
         // console.log("ExecutedQty", executedQty);
         // console.log("fills", fills);
@@ -191,6 +192,27 @@ export class Engine {
 
             });
         }
+    }
+
+
+    createDbTrades(fills: Fill[], market: string, side: "BUY" | "SELL", currency_code: string) {
+        console.log("Inside create DB Trades")
+        fills.forEach(fill => {
+            RedisManager.getInstance().sendToQueue({
+                type: "TRADE_ADDED",
+                data: {
+                    market,
+                    id: fill.tradeId.toString(),
+                    side,
+                    isBuyerMaker: side === "SELL",
+                    price: fill.price,
+                    quantity: fill.qty.toString(),
+                    quoteQuantity: (fill.qty * Number(fill.price)).toString(),
+                    timestamp: Date.now(),
+                    currency_code,
+                }
+            });
+        });
     }
 
 

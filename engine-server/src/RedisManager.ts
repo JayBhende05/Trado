@@ -4,12 +4,12 @@ import { SendMessageToAPI } from "./types/engine.types";
 
 
 
-export class RedisManger {
+export class RedisManager {
 
     private publisherClient: RedisClientType
     private queueClient: RedisClientType
 
-    private static instance: RedisManger
+    private static instance: RedisManager
 
     private constructor() {
         this.publisherClient = createClient()
@@ -22,13 +22,15 @@ export class RedisManger {
 
     public static getInstance() {
         if (!this.instance) {
-            this.instance = new RedisManger
+            this.instance = new RedisManager
         }
         return this.instance
     }
 
     public sendToQueue(message: any) {
         this.queueClient.lPush("db_processor", JSON.stringify(message));
+        console.log("Message send to db Queue", message)
+
     }
 
     public sendToApi(clientId: string, message: SendMessageToAPI) {
