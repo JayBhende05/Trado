@@ -28,7 +28,7 @@ export class Orderbook {
         executedQty: number,
         fills: Fill[]
     } {
-        
+
         if (order.side === "BUY") {
             const { executedQty, fills } = this.matchAsks(order);
             order.filled = executedQty;
@@ -137,4 +137,60 @@ export class Orderbook {
             executedQty
         };
     }
+
+    getDepth() {
+        const bids: [string, string][] = [];
+        const asks: [string, string][] = [];
+
+        const bidsObj: { [key: string]: number } = {};
+        const asksObj: { [key: string]: number } = {};
+
+        for (let i = 0; i < this.bids.length; i++) {
+            const order = this.bids[i];
+            if (!order) {
+                throw new Error("Invalid bid");
+            }
+            if (!bidsObj[order.price]) {
+                bidsObj[order.price] = 0;
+            }
+            // @ts-ignore 
+            bidsObj[order.price] += order.quantity;
+        }
+
+        for (let i = 0; i < this.asks.length; i++) {
+            const order = this.asks[i];
+            if (!order) {
+                throw new Error("Invalid ask");
+            }
+            if (!asksObj[order.price]) {
+                asksObj[order.price] = 0;
+            }
+            // @ts-ignore 
+
+            asksObj[order.price] += order.quantity;
+        }
+
+        for (const price in bidsObj) {
+            // @ts-ignore 
+
+            bids.push([price, bidsObj[price].toString()]);
+        }
+
+        for (const price in asksObj) {
+            // @ts-ignore 
+
+            asks.push([price, asksObj[price].toString()]);
+        }
+
+        return {
+            bids,
+            asks
+        };
+    }
+
+
+
+
 }
+
+
