@@ -33,9 +33,13 @@ export class RedisManager {
 
     }
 
+
     public sendToApi(clientId: string, message: SendMessageToAPI) {
         this.publisherClient.publish(clientId, JSON.stringify(message))
     }
 
+    public publishMessage(field: string, message: any) {
+        this.publisherClient.publish(field, JSON.stringify(message));
+    }
 
 }
