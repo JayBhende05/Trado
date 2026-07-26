@@ -24,10 +24,13 @@ export class User {
             console.log("PArsed WS data is", parsedData);
             if (parsedData.method === 'SUBSCRIBE') {
                 parsedData.params.forEach((field: string) => SubscriptionManager.getInstance().Subscribe(this.id, field));
+                this.ws.send("Subscribed Successfully")
             }
 
             if (parsedData.method === 'UNSUBSCRIBE') {
                 parsedData.params.forEach((field: string) => SubscriptionManager.getInstance().Unsubscribe(this.id, field));
+                this.ws.send("Unsubscribed Successfully ")
+
             }
         })
     }

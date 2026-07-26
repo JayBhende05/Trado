@@ -1,14 +1,24 @@
 import { Order } from "./orderbook.types";
 
-export interface proccessMessage {
+export type proccessMessage = {
     clientId: string,
     message: {
-        type: string,
+        type: "CREATE_ORDER",
         data: {
             userId: string,
             price: number,
             quantity: number,
             side: "BUY" | "SELL",
+            market: string
+        }
+    }
+}
+    |
+{
+    clientId: string,
+    message: {
+        type: "GET_DEPTH",
+        data: {
             market: string
         }
     }
@@ -21,7 +31,7 @@ export interface UserBalance {
     }
 }
 
-export interface SendMessageToAPI {
+export type SendMessageToAPI = {
     type: string;
     status: "SUCCESS" | "FAILED";
     payload: {
@@ -34,4 +44,19 @@ export interface SendMessageToAPI {
         }[];
     }
 }
-
+    |
+{
+    type: string;
+    payload: {
+        bids: [],
+        asks: []
+    }
+}
+    |
+{
+    type: string;
+    payload: {
+        bids: [string, string][],
+        asks: [string, string][]
+    }
+}

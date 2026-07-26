@@ -41,6 +41,8 @@ export class Engine {
                         },
                     })
 
+                    console.log("--------------END-----------------")
+
                     break;
                 } catch (error) {
                     console.log("Failed to place order", {
@@ -57,6 +59,29 @@ export class Engine {
                         },
                     })
                 }
+
+            case 'GET_DEPTH':
+                try {
+                    const market = message.data.market;
+                    const orderbook = this.orderbooks.find(o => o.ticker() === market);
+                    if (!orderbook) {
+                        throw new Error("No orderbook found");
+                    }
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: "DEPTH",
+                        payload: orderbook.getDepth()
+                    });
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: "DEPTH",
+                        payload: {
+                            bids: [],
+                            asks: []
+                        }
+                    });
+                }
+                break;
 
         }
 

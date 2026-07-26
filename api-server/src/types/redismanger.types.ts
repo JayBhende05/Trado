@@ -1,8 +1,16 @@
 import { Order } from "../schemas/order.schema.js";
 
-export interface sendToApiTypes {
+export type sendToApiTypes = {
     type: string,
     data: Order
+}
+    |
+{
+    type: string,
+    data: {
+        market: string
+    }
+
 }
 
 

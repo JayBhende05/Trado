@@ -42,6 +42,8 @@ export class RedisManager {
                 this.subscriberClient.unsubscribe(id);
                 console.log("Unsubscribed to Pub/Sub with Id", id)
                 resolve(JSON.parse(message))
+                console.log("--------------END-----------------")
+
             })
             this.queueClient.lPush("message", JSON.stringify({ clientId: id, data: message }))
             console.log("Added to Queue")
