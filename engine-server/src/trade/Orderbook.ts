@@ -70,8 +70,9 @@ export class Orderbook {
             const ask = this.asks[i];
             if (!ask) continue;
 
-            if (ask.price <= order.price && executedQty < order.quantity) {
-                const filledQty = Math.min(order.quantity - executedQty, ask.quantity);
+            const remainingAskQty = ask.quantity - ask.filled;
+            if (ask.price <= order.price && executedQty < order.quantity && remainingAskQty > 0) {
+                const filledQty = Math.min(order.quantity - executedQty, remainingAskQty);
                 executedQty += filledQty;
                 ask.filled += filledQty;
                 fills.push({
@@ -107,10 +108,11 @@ export class Orderbook {
             const bid = this.bids[i];
             if (!bid) {
                 throw new Error("Invalid bid");
-            };
+            }
 
-            if (bid.price >= order.price && executedQty < order.quantity) {
-                const amountRemaining = Math.min(order.quantity - executedQty, bid.quantity);
+            const remainingBidQty = bid.quantity - bid.filled;
+            if (bid.price >= order.price && executedQty < order.quantity && remainingBidQty > 0) {
+                const amountRemaining = Math.min(order.quantity - executedQty, remainingBidQty);
                 executedQty += amountRemaining;
                 bid.filled += amountRemaining;
                 fills.push({
@@ -154,7 +156,7 @@ export class Orderbook {
                 bidsObj[order.price] = 0;
             }
             // @ts-ignore 
-            bidsObj[order.price] += order.quantity;
+            bidsObj[order.price] += (order.quantity - order.filled);
         }
 
         for (let i = 0; i < this.asks.length; i++) {
@@ -167,7 +169,7 @@ export class Orderbook {
             }
             // @ts-ignore 
 
-            asksObj[order.price] += order.quantity;
+            asksObj[order.price] += (order.quantity - order.filled);
         }
 
         for (const price in bidsObj) {

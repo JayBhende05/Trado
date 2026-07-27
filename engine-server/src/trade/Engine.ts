@@ -266,7 +266,13 @@ export class Engine {
         }
         const depth = orderbook.getDepth();
         if (side === "BUY") {
-            const updatedAsks = depth?.asks.filter(x => fills.map(f => f.price).includes(x[0].toString()));
+            const updatedAsks = depth?.asks.filter(x => fills.map(f => f.price).includes(x[0].toString())) || [];
+            const filledPrices = fills.map(f => f.price.toString());
+            filledPrices.forEach(p => {
+                if (!updatedAsks.some(x => x[0] === p)) {
+                    updatedAsks.push([p, "0"]);
+                }
+            });
             const updatedBid = depth?.bids.find(x => x[0] === price.toString());
             console.log("publish ws depth updates")
             RedisManager.getInstance().publishMessage(`depth@${market}`, {
@@ -279,7 +285,13 @@ export class Engine {
             });
         }
         if (side === "SELL") {
-            const updatedBids = depth?.bids.filter(x => fills.map(f => f.price).includes(x[0].toString()));
+            const updatedBids = depth?.bids.filter(x => fills.map(f => f.price).includes(x[0].toString())) || [];
+            const filledPrices = fills.map(f => f.price.toString());
+            filledPrices.forEach(p => {
+                if (!updatedBids.some(x => x[0] === p)) {
+                    updatedBids.push([p, "0"]);
+                }
+            });
             const updatedAsk = depth?.asks.find(x => x[0] === price.toString());
             console.log("publish ws depth updates")
             RedisManager.getInstance().publishMessage(`depth@${market}`, {

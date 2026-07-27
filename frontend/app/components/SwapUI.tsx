@@ -1,10 +1,41 @@
-"use client";
 import { useState } from "react";
+import axios from "axios";
 
 export function SwapUI({ market }: {market: string}) {
     const [amount, setAmount] = useState('');
     const [activeTab, setActiveTab] = useState('buy');
     const [type, setType] = useState('limit');
+    const [price, setPrice] = useState('120');
+    const [quantity, setQuantity] = useState('10');
+    const [status, setStatus] = useState<string | null>(null);
+
+    const handleOrderSubmit = async () => {
+        setStatus("Submitting...");
+        const wsMarket = market.includes("_")
+            ? market
+            : market.replace("USDT", "_USDT").replace("USDC", "_USDC");
+
+        const side = activeTab.toUpperCase();
+        const userId = side === "BUY" ? "1" : "2";
+
+        try {
+            const response = await axios.post("http://localhost:3001/api/v1/order", {
+                userId,
+                price: Number(price),
+                quantity: Number(quantity),
+                side,
+                market: wsMarket
+            });
+            console.log("Order response:", response.data);
+            setStatus(`Success: Order Placed!`);
+            setTimeout(() => setStatus(null), 3000);
+        } catch (error: any) {
+            console.error("Order submission failed:", error);
+            const errMsg = error.response?.data?.error?.message || error.message || "Failed to place order";
+            setStatus(`Error: ${errMsg}`);
+            setTimeout(() => setStatus(null), 5000);
+        }
+    };
 
    return (
   <div className="overflow-hidden rounded-xl border border-[#1F2937] bg-[#0D1117]">
@@ -39,20 +70,29 @@ export function SwapUI({ market }: {market: string}) {
 
       <InputBox
         label="Price"
-        value="134.38"
+        value={price}
+        onChange={setPrice}
         icon="/usdc.webp"
       />
 
 
       <InputBox
         label="Quantity"
-        value="123"
+        value={quantity}
+        onChange={setQuantity}
         icon="/sol.webp"
       />
 
 
+      {status && (
+        <div className={`text-xs text-center font-medium ${status.startsWith("Success") ? "text-green-400" : status.startsWith("Error") ? "text-red-400" : "text-yellow-400"}`}>
+          {status}
+        </div>
+      )}
+
+
       <div className="text-right text-xs text-gray-500">
-        ≈ 0.00 USDC
+        ≈ {(Number(price || 0) * Number(quantity || 0)).toFixed(2)} USDC
       </div>
 
 
@@ -71,13 +111,14 @@ export function SwapUI({ market }: {market: string}) {
 
       {/* Submit */}
       <button
+        onClick={handleOrderSubmit}
         className={`h-12 w-full rounded-xl font-semibold transition ${
           activeTab === "buy"
             ? "bg-[#00D084] text-black hover:bg-[#00A86B]"
             : "bg-[#F6465D] text-white hover:bg-red-600"
         }`}
       >
-        {activeTab === "buy" ? "Buy SOL" : "Sell SOL"}
+        {activeTab === "buy" ? "Buy" : "Sell"} {market.replace("_", "").replace("USDT", "").replace("USDC", "")}
       </button>
 
 
@@ -113,10 +154,12 @@ export function SwapUI({ market }: {market: string}) {
 function InputBox({
   label,
   value,
+  onChange,
   icon,
 }: {
   label: string;
   value: string;
+  onChange: (val: string) => void;
   icon: string;
 }) {
   return (
@@ -131,7 +174,7 @@ function InputBox({
 
         <input
           value={value}
-          readOnly
+          onChange={(e) => onChange(e.target.value)}
           className="h-12 w-full rounded-xl border border-[#1F2937] bg-[#070B12] px-4 pr-14 text-right text-xl text-white outline-none focus:border-[#00D084]"
         />
 

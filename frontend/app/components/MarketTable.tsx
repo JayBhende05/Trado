@@ -116,252 +116,251 @@ export default function MarketTable({
   const getBaseSymbol = (symbol: string) => symbol.replace("USDT", "");
 
   return (
-  <div className="overflow-hidden rounded-2xl border border-[#1F2937] bg-[#0D1117] shadow-xl">
+    <div className="overflow-hidden rounded-2xl border border-[#1F2937] bg-[#0D1117] shadow-xl">
 
-    {/* Header */}
-    <div className="flex items-center justify-between border-b border-[#1F2937] p-5">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-[#1F2937] p-5">
 
-      <div>
-        <h2 className="text-lg font-semibold text-white">
-          Markets
-        </h2>
+        <div>
+          <h2 className="text-lg font-semibold text-white">
+            Markets
+          </h2>
 
-        <p className="mt-1 text-xs text-gray-500">
-          Live crypto prices
-        </p>
+          <p className="mt-1 text-xs text-gray-500">
+            Live crypto prices
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-[#1F2937] bg-[#070B12] px-3 py-2 text-xs text-gray-400">
+          {sortedAssets.length} Assets
+        </div>
+
       </div>
 
-      <div className="rounded-lg border border-[#1F2937] bg-[#070B12] px-3 py-2 text-xs text-gray-400">
-        {sortedAssets.length} Assets
-      </div>
 
-    </div>
+      {/* Table */}
+      <div className="overflow-x-auto">
 
+        <table className="w-full text-left">
 
-    {/* Table */}
-    <div className="overflow-x-auto">
+          <thead>
+            <tr className="border-b border-[#1F2937] text-[11px] uppercase tracking-wider text-gray-500">
 
-      <table className="w-full text-left">
-
-        <thead>
-          <tr className="border-b border-[#1F2937] text-[11px] uppercase tracking-wider text-gray-500">
-
-            <th
-              className="cursor-pointer p-4"
-              onClick={() => handleSort("symbol")}
-            >
-              Asset
-            </th>
-
-            <th
-              className="cursor-pointer p-4 text-right"
-              onClick={() => handleSort("lastPrice")}
-            >
-              Price
-            </th>
-
-            <th
-              className="hidden cursor-pointer p-4 text-right md:table-cell"
-              onClick={() => handleSort("priceChangePercent")}
-            >
-              24h Change
-            </th>
-
-            <th className="hidden p-4 text-right md:table-cell">
-              High
-            </th>
-
-            <th className="hidden p-4 text-right md:table-cell">
-              Low
-            </th>
-
-            <th
-              className="cursor-pointer p-4 text-right"
-              onClick={() => handleSort("quoteVolume")}
-            >
-              Volume
-            </th>
-
-            <th className="hidden p-4 text-right lg:table-cell">
-              Trend
-            </th>
-
-          </tr>
-        </thead>
-
-
-        <tbody className="divide-y divide-[#1F2937]">
-
-          {loading ? (
-
-            <tr>
-              <td
-                colSpan={7}
-                className="p-12 text-center text-gray-500"
+              <th
+                className="cursor-pointer p-4"
+                onClick={() => handleSort("symbol")}
               >
-                Loading markets...
-              </td>
-            </tr>
+                Asset
+              </th>
 
-          ) : sortedAssets.length === 0 ? (
-
-            <tr>
-              <td
-                colSpan={7}
-                className="p-12 text-center text-gray-500"
+              <th
+                className="cursor-pointer p-4 text-right"
+                onClick={() => handleSort("lastPrice")}
               >
-                No assets found
-              </td>
+                Price
+              </th>
+
+              <th
+                className="hidden cursor-pointer p-4 text-right md:table-cell"
+                onClick={() => handleSort("priceChangePercent")}
+              >
+                24h Change
+              </th>
+
+              <th className="hidden p-4 text-right md:table-cell">
+                High
+              </th>
+
+              <th className="hidden p-4 text-right md:table-cell">
+                Low
+              </th>
+
+              <th
+                className="cursor-pointer p-4 text-right"
+                onClick={() => handleSort("quoteVolume")}
+              >
+                Volume
+              </th>
+
+              <th className="hidden p-4 text-right lg:table-cell">
+                Trend
+              </th>
+
             </tr>
-
-          ) : (
-
-            sortedAssets.map((asset) => {
-
-              const base = getBaseSymbol(asset.symbol);
-              const change = Number(asset.priceChangePercent);
-              const positive = change >= 0;
+          </thead>
 
 
-              return (
-                <tr
-                  key={asset.symbol}
-                  onClick={() => onSelectAsset(asset)}
-                  className="cursor-pointer transition hover:bg-[#111827]"
+          <tbody className="divide-y divide-[#1F2937]">
+
+            {loading ? (
+
+              <tr>
+                <td
+                  colSpan={7}
+                  className="p-12 text-center text-gray-500"
                 >
+                  Loading markets...
+                </td>
+              </tr>
 
-                  {/* Asset */}
-                  <td className="p-4">
+            ) : sortedAssets.length === 0 ? (
 
-                    <div className="flex items-center gap-3">
+              <tr>
+                <td
+                  colSpan={7}
+                  className="p-12 text-center text-gray-500"
+                >
+                  No assets found
+                </td>
+              </tr>
 
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#1F2937] bg-[#070B12] text-xs font-bold text-[#00D084]">
-                        <img
-          src={`/coins/${base?.toLowerCase()}.png`}
-          alt={base}
-          className="
+            ) : (
+
+              sortedAssets.map((asset) => {
+
+                const base = getBaseSymbol(asset.symbol);
+                const change = Number(asset.priceChangePercent);
+                const positive = change >= 0;
+
+
+                return (
+                  <tr
+                    key={asset.symbol}
+                    onClick={() => onSelectAsset(asset)}
+                    className="cursor-pointer transition hover:bg-[#111827]"
+                  >
+
+                    {/* Asset */}
+                    <td className="p-4">
+
+                      <div className="flex items-center gap-3">
+
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#1F2937] bg-[#070B12] text-xs font-bold text-[#00D084]">
+                          <img
+                            src={`/coins/${base?.toLowerCase()}.png`}
+                            alt={base}
+                            className="
             h-9
             w-9
             rounded-full
             border
             border-[#1F2937]
           "
-        
-        />
+
+                          />
+                        </div>
+
+
+                        <div>
+                          <p className="font-semibold text-white">
+                            {base}
+                          </p>
+
+                          <p className="text-xs text-gray-500">
+                            {asset.symbol}
+                          </p>
+                        </div>
+
                       </div>
 
-
-                      <div>
-                        <p className="font-semibold text-white">
-                          {base}
-                        </p>
-
-                        <p className="text-xs text-gray-500">
-                          {asset.symbol}
-                        </p>
-                      </div>
-
-                    </div>
-
-                  </td>
+                    </td>
 
 
-                  {/* Price */}
-                  <td className="p-4 text-right font-mono text-white">
-                    {formatPrice(Number(asset.lastPrice))}
-                  </td>
+                    {/* Price */}
+                    <td className="p-4 text-right font-mono text-white">
+                      {formatPrice(Number(asset.lastPrice))}
+                    </td>
 
 
-                  {/* Change */}
-                  <td className="hidden p-4 text-right md:table-cell">
+                    {/* Change */}
+                    <td className="hidden p-4 text-right md:table-cell">
 
-                    <span
-                      className={`rounded-lg px-3 py-1 text-xs font-semibold ${
-                        positive
+                      <span
+                        className={`rounded-lg px-3 py-1 text-xs font-semibold ${positive
                           ? "bg-[#00D084]/10 text-[#00D084]"
                           : "bg-[#F6465D]/10 text-[#F6465D]"
-                      }`}
-                    >
-                      {positive ? "+" : ""}
-                      {change.toFixed(2)}%
-                    </span>
+                          }`}
+                      >
+                        {positive ? "+" : ""}
+                        {change.toFixed(2)}%
+                      </span>
 
-                  </td>
-
-
-                  {/* High */}
-                  <td className="hidden p-4 text-right text-gray-400 md:table-cell">
-                    {formatPrice(Number(asset.highPrice))}
-                  </td>
+                    </td>
 
 
-                  {/* Low */}
-                  <td className="hidden p-4 text-right text-gray-400 md:table-cell">
-                    {formatPrice(Number(asset.lowPrice))}
-                  </td>
+                    {/* High */}
+                    <td className="hidden p-4 text-right text-gray-400 md:table-cell">
+                      {formatPrice(Number(asset.highPrice))}
+                    </td>
 
 
-                  {/* Volume */}
-                  <td className="p-4 text-right font-mono text-white">
-                    {formatVolume(Number(asset.quoteVolume))}
-                  </td>
+                    {/* Low */}
+                    <td className="hidden p-4 text-right text-gray-400 md:table-cell">
+                      {formatPrice(Number(asset.lowPrice))}
+                    </td>
 
 
-                  {/* Chart */}
-                  <td className="hidden p-4 lg:table-cell">
+                    {/* Volume */}
+                    <td className="p-4 text-right font-mono text-white">
+                      {formatVolume(Number(asset.quoteVolume))}
+                    </td>
 
-                    <div className="ml-auto h-7 w-[100px]">
 
-                      {asset.sparkline?.length ? (
+                    {/* Chart */}
+                    <td className="hidden p-4 lg:table-cell">
 
-                        <svg
-                          viewBox="0 0 100 24"
-                          className="h-full w-full"
-                        >
+                      <div className="ml-auto h-7 w-[100px]">
 
-                          <polyline
-                            fill="none"
-                            stroke={positive ? "#00D084" : "#F6465D"}
-                            strokeWidth="2"
-                            points={asset.sparkline
-                              .map((v, i) => {
+                        {asset.sparkline?.length ? (
 
-                                const x =
-                                  (i / (asset.sparkline!.length - 1)) * 90 + 5;
+                          <svg
+                            viewBox="0 0 100 24"
+                            className="h-full w-full"
+                          >
 
-                                const y =
-                                  20 -
-                                  (v /
-                                    Math.max(
-                                      ...asset.sparkline!
-                                    )) *
+                            <polyline
+                              fill="none"
+                              stroke={positive ? "#00D084" : "#F6465D"}
+                              strokeWidth="2"
+                              points={asset.sparkline
+                                .map((v, i) => {
+
+                                  const x =
+                                    (i / (asset.sparkline!.length - 1)) * 90 + 5;
+
+                                  const y =
+                                    20 -
+                                    (v /
+                                      Math.max(
+                                        ...asset.sparkline!
+                                      )) *
                                     15;
 
-                                return `${x},${y}`;
-                              })
-                              .join(" ")}
-                          />
+                                  return `${x},${y}`;
+                                })
+                                .join(" ")}
+                            />
 
-                        </svg>
+                          </svg>
 
-                      ) : null}
+                        ) : null}
 
-                    </div>
+                      </div>
 
-                  </td>
+                    </td>
 
-                </tr>
-              );
-            })
+                  </tr>
+                );
+              })
 
-          )}
+            )}
 
-        </tbody>
+          </tbody>
 
-      </table>
+        </table>
+
+      </div>
 
     </div>
-
-  </div>
-);
+  );
 }

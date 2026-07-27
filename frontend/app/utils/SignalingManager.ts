@@ -1,7 +1,7 @@
 import { B24hrTicker, BTicker } from "./types";
 
 
-const BASE_URL = "wss://stream.binance.com/stream"
+const BASE_URL = "ws://localhost:3004"
 
 export class SignalingManager {
   private ws!: WebSocket;
@@ -61,14 +61,28 @@ export class SignalingManager {
     };
 
     this.ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
+      let message;
+      try {
+        message = JSON.parse(event.data);
+      } catch (err) {
+        console.log("Received non-JSON websocket message:", event.data);
+        return;
+      }
+      console.log("WS parsed message:", message);
       let type: string = "";
       if (message.data) {
         type = message?.data.e;
+        if (type === "depth") {
+          type = "depthUpdate";
+        }
       }
 
       if (this.callbacks[type]) {
-        this.callbacks[type].forEach(({ callback }: any) => {
+        this.callbacks[type].forEach(({ callback, id }: any) => {
+          if (id && message.stream && id !== message.stream) {
+            return;
+          }
+
           if (type === "24hrTicker") {
             const newTicker: Partial<B24hrTicker> = {
               symbol: message.data.s,

@@ -33,22 +33,33 @@ export function Depth({ market }: { market: string }) {
     // setPrice(t[0].price);
     // console.log("Trades Price ", trades[0].price)
 
-    const mark = market.replace("_", "").toLowerCase();
+    const wsMarket = market.includes("_")
+      ? market
+      : market.replace("USDT", "_USDT").replace("USDC", "_USDC");
 
     SignalingManager.getInstance().registerCallback(
       "depthUpdate",
       (data: { Bids: [string, string][]; Asks: [string, string][] }) => {
-        setBids((prev) => updateOrderBook(prev, data.Bids, true));
-        setAsks((prev) => updateOrderBook(prev, data.Asks, false));
+        console.log("depthUpdate callback triggered with data:", data);
+        setBids((prev) => {
+          const updated = updateOrderBook(prev || [], data.Bids, true);
+          console.log("Updated Bids state:", updated);
+          return updated;
+        });
+        setAsks((prev) => {
+          const updated = updateOrderBook(prev || [], data.Asks, false);
+          console.log("Updated Asks state:", updated);
+          return updated;
+        });
       },
-      `${mark}@depth`
+      `depth@${wsMarket}`
     );
 
     SignalingManager.getInstance().registerCallback(
       "24hrTicker",
       (data: Partial<B24hrTicker>) =>
         setPrice((prev) => data.lastPrice ?? prev ?? ""),
-      `${mark}@ticker`
+      `${wsMarket}@ticker`
     );
 
     SignalingManager.getInstance().registerCallback(
@@ -60,12 +71,12 @@ export function Depth({ market }: { market: string }) {
 
         setTrades((prev) => [trade, ...prev].slice(0, 30));
       },
-      `${mark}@trade`
+      `trade@${wsMarket}`
     );
 
     SignalingManager.getInstance().sendMessage({
       method: "SUBSCRIBE",
-      params: [`${mark}@depth`, `${mark}@trade`],
+      params: [`depth@${wsMarket}`, `trade@${wsMarket}`],
     });
 
     // getKlines(market, "1h", 1640099200, 1640100800).then(t => setPrice(t[0].close));
@@ -73,26 +84,26 @@ export function Depth({ market }: { market: string }) {
     return () => {
       SignalingManager.getInstance().deRegisterCallback(
         "depthUpdate",
-        `${mark}@depth`
+        `depth@${wsMarket}`
       );
       SignalingManager.getInstance().deRegisterCallback(
         "24hrTicker",
-        `${mark}@ticker`
+        `${wsMarket}@ticker`
       );
       SignalingManager.getInstance().deRegisterCallback(
         "trade",
-        `${mark}@trade`
+        `trade@${wsMarket}`
       );
 
       SignalingManager.getInstance().sendMessage({
         method: "UNSUBSCRIBE",
-        params: [`${mark}@depth`, `${mark}@trade`],
+        params: [`depth@${wsMarket}`, `trade@${wsMarket}`],
       });
     };
   }, [market]);
 
- return (
-  <div className="
+  return (
+    <div className="
     overflow-hidden
     rounded-xl
     border
@@ -100,8 +111,8 @@ export function Depth({ market }: { market: string }) {
     bg-[#0D1117]
   ">
 
-    {/* Tabs */}
-    <div className="
+      {/* Tabs */}
+      <div className="
       flex
       items-center
       gap-6
@@ -110,50 +121,50 @@ export function Depth({ market }: { market: string }) {
       px-4
     ">
 
-      <OrderBookButton
-        type={btnType}
-        setType={setbtnType}
-      />
+        <OrderBookButton
+          type={btnType}
+          setType={setbtnType}
+        />
 
-      <TradeButton
-        type={btnType}
-        setType={setbtnType}
-      />
+        <TradeButton
+          type={btnType}
+          setType={setbtnType}
+        />
+
+      </div>
+
+
+      {/* Content */}
+      <div className="p-4">
+
+        {btnType === "orderbook" ? (
+          <section>
+
+            <OrderBookTableHeader />
+
+            <OrderBook
+              asks={asks}
+              bids={bids}
+              price={price}
+            />
+
+          </section>
+        ) : (
+          <section>
+
+            <TradeTableHeader />
+
+            <TradesBook
+              trades={trades}
+            />
+
+          </section>
+        )}
+
+      </div>
 
     </div>
-
-
-    {/* Content */}
-    <div className="p-4">
-
-      {btnType === "orderbook" ? (
-        <section>
-
-          <OrderBookTableHeader />
-
-          <OrderBook
-            asks={asks}
-            bids={bids}
-            price={price}
-          />
-
-        </section>
-      ) : (
-        <section>
-
-          <TradeTableHeader />
-
-          <TradesBook
-            trades={trades}
-          />
-
-        </section>
-      )}
-
-    </div>
-
-  </div>
-);
+  );
 }
 
 function OrderBookTableHeader() {
@@ -225,10 +236,9 @@ function OrderBookButton({
         text-sm
         font-medium
         transition
-        ${
-          type === "orderbook"
-            ? "text-white"
-            : "text-gray-500 hover:text-white"
+        ${type === "orderbook"
+          ? "text-white"
+          : "text-gray-500 hover:text-white"
         }
       `}
     >
@@ -264,10 +274,9 @@ function TradeButton({
         text-sm
         font-medium
         transition
-        ${
-          type === "trade"
-            ? "text-white"
-            : "text-gray-500 hover:text-white"
+        ${type === "trade"
+          ? "text-white"
+          : "text-gray-500 hover:text-white"
         }
       `}
     >
