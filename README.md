@@ -1077,8 +1077,8 @@ I've been sharing each milestone publicly, explaining the architecture, design d
 | Part 2 | Exchange Architecture | ✅ |[Watch Video](https://www.linkedin.com/posts/jaybhende_buildinpublic-systemdesign-backend-ugcPost-7485602453455941632-huCv/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEz1SdoB-kpMWVqFMu4dI7QS0MJNxGX9MA8) |
 | Part 3 | Order Execution Pipeline | ✅ |[Watch Video](https://www.linkedin.com/posts/jaybhende_until-now-trado-could-display-live-market-ugcPost-7485732373255516162-Zs_5/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEz1SdoB-kpMWVqFMu4dI7QS0MJNxGX9MA8) |
 | Part 4 | Database Persistence | ✅ |[Watch Video](https://www.linkedin.com/posts/jaybhende_buildinpublic-backenddevelopment-systemdesign-ugcPost-7486303898085830657-YA-a/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEz1SdoB-kpMWVqFMu4dI7QS0MJNxGX9MA8) |
-| Part 5 | WebSocket Infrastructure | ✅ |[Watch Video]() |
-| Part 6 | End-to-End Exchange Flow | ✅ |[Watch Video]() |
+| Part 5 | WebSocket Infrastructure | ✅ |[Watch Video](https://www.linkedin.com/posts/jaybhende_buildinpublic-backenddevelopment-systemdesign-ugcPost-7487000480443846656-0A-K/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEz1SdoB-kpMWVqFMu4dI7QS0MJNxGX9MA8) |
+| Part 6 | End-to-End Exchange Flow | ✅ |[Watch Video](https://www.linkedin.com/posts/jaybhende_buildinpublic-backenddevelopment-systemdesign-ugcPost-7487566865020452864-Ps2s/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEz1SdoB-kpMWVqFMu4dI7QS0MJNxGX9MA8) |
 
 Each article focuses on the "why" behind the implementation rather than simply presenting the code.
 
