@@ -1,31 +1,3 @@
-"Release"
-Core Exchange Architecture Latest
-@JayBhende05 JayBhende05 released this 40 minutes ago
- v1.0.0
- 3572ca5
-Trado has evolved from a frontend prototype into a functional cryptocurrency exchange architecture.
-
-Highlights
-
-• API Server
-• Matching Engine
-• Redis Pub/Sub
-• Redis Queues
-• Database Processor
-• TimescaleDB
-• WebSocket Server
-• Real-time order execution
-• Live order book updates
-• Live trade streaming
-• Buy & Sell order placement
-• Event-driven architecture
-
-This release demonstrates the complete end-to-end trading flow—from order placement to execution, persistence, and real-time broadcasting.
-
-This marks the completion of the core exchange architecture.
-
-Future work will focus on authentication, advanced order types, performance optimizations, scalability, and production-ready deployment.
-
 
 # 🚀 Trado
 
